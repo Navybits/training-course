@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Roughly 155 characters">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+    <script>
+    function reqListener(){
+      console.log(this.responseText)
+      document.body = this.responseText;
+    }
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener('load',reqListener);
+    oReq.open("GET","https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22")
+    oReq.send()
+    </script>
+  </head>
+  <body>
+    <!-- Content -->
+    <header>
+      <nav>
+        <ul>
+          <li class="li-in-ul"><a href="http://navybits.com" target="_blank" >Navybits</a></li>
+          <li class="li-in-ul"><a href="http://google.com" target="_blank" >Google</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section>
+      <main>
+        <article>
+          <p>Lorem ipsum dolor</p>
+        </article>
+      </main>
+      </section>
+    <footer></footer>
+  </body>
+</html>
