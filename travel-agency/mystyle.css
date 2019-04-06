@@ -1,3 +1,8 @@
+html body {
+    font-family: 'Open Sans', sans-serif;
+}
+
+
 header {
     position: absolute;
     width: 100%;
@@ -10,11 +15,11 @@ main {
     margin-top: 64px;
 }
 
-@media only screen and (max-width:460px){
+@media only screen and (max-width:460px) {
     main {
         margin-top: 72px;
     }
-    
+
 }
 
 .top-header {
@@ -31,34 +36,59 @@ nav ul {
 .top-header li,
 nav .container li {
     list-style: none;
-    display: inline-block;
+    /* display: inline-block; */
 }
 
 .top-header li {
-    border-right: 1px solid #2b2b2b57;
+    border-right: 1px ridge #00000054;
 }
+
+#ul-social li:first-child {
+    border-left: 1px ridge #00000054;
+}
+
 
 .top-header li a {
     color: white;
     font-size: 10px;
     vertical-align: text-bottom;
-    padding-right: 4px;
-    padding-left: 4px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 div.container {
-    display: flex;
+    /* display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; */
 }
 
 nav .container a {
-    padding: 0.5rem;
-    color: black;
+    padding: 1rem;
+    color: #5d6e80;
+    text-transform: uppercase;
+    font-size: .7rem;
 }
 
+
+nav .container a i.fas.fa-search {
+    font-size: 1.2em;
+}
+
+nav .container a.active,
+nav .container a:hover {
+    color: #2bd5b4;
+    text-decoration: none;
+}
+
+nav .container a:hover {
+    font-size: .8rem;
+}
+
+
 nav .container a img {
-    height: 1rem;
+    height: 1.2rem;
 }
 
 main section.main-carousel img {
