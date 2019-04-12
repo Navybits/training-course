@@ -1,0 +1,26 @@
+nav .container a {
+    padding: 1rem;
+    color: #5d6e80;
+    text-transform: uppercase;
+    font-size: .7rem;
+}
+
+
+nav .container a i.fas.fa-search {
+    font-size: 1.2em;
+}
+
+nav .container a.active,
+nav .container a:hover {
+    color: #2bd5b4;
+    text-decoration: none;
+}
+
+nav .container a:hover {
+    font-size: .8rem;
+}
+
+
+nav .container a img {
+    height: 1.2rem;
+}
