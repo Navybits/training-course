@@ -28,7 +28,7 @@
     <script src="script.js"></script>
   </head>
   <body class="d-flex flex-column justify-content-between">
-    <header>
+    <header id="header">
       <div class="top-header">
         <div
           class="align-items-center container d-flex justify-content-between "
@@ -62,7 +62,11 @@
           class="align-items-center container d-flex justify-content-between"
         >
           <a href="Travel-agency.html">
-            <img src="assets/voyage.jpeg" alt="Voyage" title="Brand Image Voyage" />
+            <img
+              src="assets/voyage.jpeg"
+              alt="Voyage"
+              title="Brand Image Voyage"
+            />
           </a>
           <ul class="row">
             <li class="align-items-center d-flex">
@@ -95,22 +99,138 @@
       <div class="container">
         <div class="row footer-section">
           <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-            <strong class="footer-title">Newsletter</strong>
+            <div class="footer-title-wrapper">
+              <strong class="footer-title">Newsletter</strong>
+            </div>
             <section class="footer-text">
-                Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
+              Lorem ipsum is placeholder text commonly used in the graphic,
+              print, and publishing industries for previewing layouts and visual
+              mockups.
             </section>
-            <form action="Travel-agency.html" method="post" class="d-flex news-letter justify-content-between">
-              <input class="form-control" type="email" required="required" placeholder="Subscribe..." name="subscribe"/>
+            <form
+              action="Travel-agency.html"
+              method="post"
+              class="d-flex news-letter justify-content-between"
+            >
+              <input
+                class="form-control"
+                type="email"
+                required="required"
+                placeholder="Subscribe..."
+                name="subscribe"
+              />
               <button type="submit" class="btn">GO</button>
             </form>
           </div>
-          <div class="col-lg-3 col-md-4 col-sm-6 col-12"></div>
-          <div class="col-lg-3 col-md-4 col-sm-6 col-12"></div>
-          <div class="col-lg-3 col-md-4 col-sm-6 col-12"></div>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12 latest-news">
+            <div class="footer-title-wrapper">
+              <strong class="footer-title">Latest News</strong>
+            </div>
+            <div class="media">
+              <img
+                class="mr-3 footer-news-image"
+                src="assets/footer-news.jpeg"
+                alt="Generic placeholder image"
+              />
+              <div class="media-body">
+                <section class="mt-0 footer-text">
+                  Postformat gallery: multiple images
+                </section>
+                <span class="date">October 21, 2013 - 3:31pm </span>
+              </div>
+            </div>
+            <div class="media">
+              <img
+                class="mr-3 footer-news-image"
+                src="assets/footer-news.jpeg"
+                alt="Generic placeholder image"
+              />
+              <div class="media-body">
+                <section class="mt-0 footer-text">
+                  Snowboarding is fun
+                </section>
+                <span class="date">December 12, 2012 - 9:11pm </span>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="footer-title-wrapper">
+              <strong class="footer-title">Tags</strong>
+            </div>
+            <div class="d-flex flex-wrap">
+              <span class="footer-tag footer-text">Agent Login</span>
+              <span class="footer-tag footer-text">Customer Login</span>
+              <span class="footer-tag footer-text">Not a Member?</span>
+              <span class="footer-tag footer-text">Contact</span>
+              <span class="footer-tag footer-text">New Horizons</span>
+              <span class="footer-tag footer-text">Landscape</span>
+              <span class="footer-tag footer-text">Tags</span>
+              <span class="footer-tag footer-text">Nice</span>
+              <span class="footer-tag footer-text">Some</span>
+              <span class="footer-tag footer-text">Portrait</span>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+            <div class="footer-title-wrapper">
+              <strong class="footer-title">Address</strong>
+            </div>
+            <address class="footer-text">
+              Written by
+              <a href="mailto:webmaster@example.com">Jon Doe</a>.<br />
+              Visit us at:<br />
+              Example.com<br />
+              Box 564, Disneyland<br />
+              USA<br />
+              <span class="footer-label">Email:</span> email@someemail.com
+            </address>
+            <ul id="footer-ul-social" class="d-flex">
+              <li class="footer-li d-flex align-items-center">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+              </li>
+              <li class="footer-li d-flex align-items-center">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+              </li>
+              <li class="footer-li d-flex align-items-center">
+                <a href="#"><i class="fab fa-tumblr"></i></a>
+              </li>
+              <li class="footer-li d-flex align-items-center">
+                <a href="#"><i class="fab fa-pinterest"></i></a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <hr />
-      <div class="container"></div>
+      <div class="container  ">
+        <div class="sub-footer">
+          <div class=" d-flex flex-wrap justify-content-center">
+            <span class="sub-footer-link footer-text">Agent Login</span>
+            <span class="sub-footer-link footer-text">::</span>
+            <span class="sub-footer-link footer-text">Customer Login</span>
+            <span class="sub-footer-link footer-text">::</span>
+            <span class="sub-footer-link footer-text">Not a Member?</span>
+            <span class="sub-footer-link footer-text">::</span>
+            <span class="sub-footer-link footer-text">Contact</span>
+            <span class="sub-footer-link footer-text">::</span>
+            <span class="sub-footer-link footer-text">New Horizons</span>
+            <span class="sub-footer-link footer-text">::</span>
+            <span class="sub-footer-link footer-text">Landscape</span>
+            <span class="sub-footer-link footer-text">::</span>
+            <span class="sub-footer-link footer-text">Tags</span>
+          </div>
+          <div class="d-flex justify-content-center">
+            <span class="copyright">
+              Copyrights @navybits. All rights reserved
+            </span>
+          </div>
+          
+        </div>
+        <div class="d-flex justify-content-center">
+            <a class="back-to-top d-flex justify-content-center" onclick='$("html, body").animate({ scrollTop: 0 }, "slow");'>
+              <i class="fa fa-arrow-up"></i>
+            </a>
+          </div>
+      </div>
     </footer>
     <!-- Content -->
   </body>
