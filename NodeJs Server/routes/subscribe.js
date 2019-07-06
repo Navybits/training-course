@@ -1,5 +1,6 @@
 module.exports = (req, res) => {
   console.log(req.body);
-  let email = req.body.subscribe;
-  res.render("subscribe", { email : email });
+  res.render("subscribe", 
+  { email: req.body.subscribe,
+     x: "Nice!" });
 };

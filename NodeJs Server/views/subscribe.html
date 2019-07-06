@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Subscribe</title>
-  </head>
-  <body>
-    <h1>Thank you {{email}}, you are now subscribed</h1>
-    <p>This is a paragraph.</p>
-    <a href="/home">Back to home</a>
+<html lang="en">
+  {% include "common/head.html" %}
+  <body class="subscribe-page d-flex flex-column justify-content-between">
+    {% include "common/header.html" %}
+    <main>
+      <h1>Thank you {{email}}, you are now subscribed</h1>
+      <p>This is a paragraph.{{x}}</p>
+      <a href="/home">Back to home</a>
+    </main>
+
+    {% include "common/footer.html" %}
+    <!-- Content -->
   </body>
 </html>
+
