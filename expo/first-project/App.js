@@ -1,51 +1,19 @@
-import React from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import Card from "./components/card";
-import styles from "./styles";
-// import HomeScreen from "./screens/home"
-export default function App() {
-  // return (<HomeScreen />)
-  const articles = [
-    {
-      image: "https://navybits.com/web/image/res.company/1/logo?unique=df329c7",
-      title: "This is my text!!!!"
-    },
-    {
-      image: "https://navybits.com/web/image/res.company/1/logo?unique=df329c7",
-      title: "This is my text!!!!"
-    },
-    {
-      image: "https://navybits.com/web/image/res.company/1/logo?unique=df329c7",
-      title: "This is my text!!!!"
-    },
-    {
-      image: "https://navybits.com/web/image/res.company/1/logo?unique=df329c7",
-      title: "This is my text!!!!"
-    },
-    {
-      image: "https://navybits.com/web/image/res.company/1/logo?unique=df329c7",
-      title: "This is my text!!!!"
-    },
-    {
-      image: "https://navybits.com/web/image/res.company/1/logo?unique=df329c7",
-      title: "This is my text!!!!"
-    }
-  ];
+import * as React from 'react';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import App from './src/App';
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'tomato',
+    accent: 'yellow',
+  },
+};
+
+export default function Main() {
   return (
-    <ScrollView style={styles.ScrollView}>
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!!!!</Text>
-        {articles.map(function(article, index) {
-          console.log({ article, index });
-          return (
-            <Card
-              key={"card" + index}
-              imageUri={article.image}
-              text={article.title}
-            />
-          );
-        })}
-      </View>
-    </ScrollView>
+    <PaperProvider theme={theme}>
+      <App />
+    </PaperProvider>
   );
 }
