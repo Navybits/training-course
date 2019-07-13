@@ -1,42 +1,287 @@
-https://snack.expo.io/@satya164/github.com-callstack-react-native-paper:example
-https://github.com/expo/expo/tree/master/apps/native-component-list
-https://docs.expo.io/versions/latest/
-
-
-======================
-
-Login screen
+Home screen:
+===========
+import * as WebBrowser from "expo-web-browser";
 import React from "react";
-import { View, Dimensions, Text } from "react-native";
+import {
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
+import AppBar from "../components/AppBar";
 import { Avatar, Button } from "react-native-paper";
-
-const ButtonComponent = (props) => {
-  return (
-  <Button
-    style={{ marginTop: 30, width: "90%" }}
-    mode="contained"
-    color="red"
-    onPress={props.onPress}
-  >
-    <Text style={{ fontSize: 30 }}>Press me</Text>
-  </Button>
-)};
-var screenWidth = Dimensions.get("window").width;
-const MyComponent = () => (
-  <Avatar.Image
-    size={screenWidth * 0.6}
-    source={require("../assets/images/logo.png")}
-  />
-);
-
-export default class Login extends React.Component {
+import { MonoText } from "../components/StyledText";
+import TextInput from "../components/TextInput";
+export default class HomeScreen extends React.Component {
+  static navigationOptions = {
+    title: "Welcome"
+  };
+  state = {
+    name: "",
+    email: "",
+    mobile: "",
+    age: ""
+  };
   render() {
-    console.log(this.props.navigation);
+    const { navigate } = this.props.navigation;
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <MyComponent />
-        <ButtonComponent
-          onPress={() => this.props.navigation.navigate("Main")}
+      <View style={[styles.container, { marginTop: 20 }]}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <View style={{ flexDirection: "row", margin: 10 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "center"
+              }}
+            >
+              <Avatar.Image
+                style={{ backgroundColor: "white" }}
+                size={100}
+                source={require("../assets/images/logo.png")}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text>name:{this.state.name}</Text>
+              <Text>mobile:{this.state.mobile}</Text>
+              <Text>age:{this.state.age}</Text>
+            </View>
+          </View>
+          <View style={{ margin: 10 }}>
+            <TextInput
+              label="Name"
+              onChange={val => {
+                this.setState({ name: val });
+              }}
+            />
+            <TextInput
+              label="Age"
+              onChange={val => {
+                this.setState({ age: val });
+              }}
+            />
+            <TextInput
+              label="Mobile"
+              onChange={val => {
+                this.setState({ mobile: val });
+              }}
+            />
+            <TextInput
+              label="Email "
+              onChange={val => {
+                this.setState({ email: val });
+              }}
+            />
+            <Button
+              disabled={this.state.name.length < 6 || this.state.email == ""}
+              mode="contained"
+              color="#fc0"
+              style={{ marginTop: 10 }}
+              onPress={() => navigate("InternalScreen", this.state)}
+            >
+              <Text>Submit Request</Text>
+            </Button>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
+}
+
+HomeScreen.navigationOptions = {
+  header: null
+};
+
+function DevelopmentModeNotice() {
+  if (__DEV__) {
+    const learnMoreButton = (
+      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
+        Learn more
+      </Text>
+    );
+
+    return (
+      <Text style={styles.developmentModeText}>
+        Development mode is enabled: your app will be slower but you can use
+        useful development tools. {learnMoreButton}
+      </Text>
+    );
+  } else {
+    return (
+      <Text style={styles.developmentModeText}>
+        You are not in development mode: your app will run at full speed.
+      </Text>
+    );
+  }
+}
+
+function handleLearnMorePress() {
+  WebBrowser.openBrowserAsync(
+    "https://docs.expo.io/versions/latest/workflow/development-mode/"
+  );
+}
+
+function handleHelpPress() {
+  WebBrowser.openBrowserAsync(
+    "https://docs.expo.io/versions/latest/workflow/up-and-running/#cant-see-your-changes"
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff"
+  },
+  developmentModeText: {
+    marginBottom: 20,
+    color: "rgba(0,0,0,0.4)",
+    fontSize: 14,
+    lineHeight: 19,
+    textAlign: "center"
+  },
+  contentContainer: {
+    paddingTop: 30
+  },
+  welcomeContainer: {
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 20
+  },
+  welcomeImage: {
+    width: 100,
+    height: 80,
+    resizeMode: "contain",
+    marginTop: 3,
+    marginLeft: -10
+  },
+  getStartedContainer: {
+    alignItems: "center",
+    marginHorizontal: 50
+  },
+  homeScreenFilename: {
+    marginVertical: 7
+  },
+  codeHighlightText: {
+    color: "rgba(96,100,109, 0.8)"
+  },
+  codeHighlightContainer: {
+    backgroundColor: "rgba(0,0,0,0.05)",
+    borderRadius: 3,
+    paddingHorizontal: 4
+  },
+  getStartedText: {
+    fontSize: 17,
+    color: "rgba(96,100,109, 1)",
+    lineHeight: 24,
+    textAlign: "center"
+  },
+  tabBarInfoContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    ...Platform.select({
+      ios: {
+        shadowColor: "black",
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3
+      },
+      android: {
+        elevation: 20
+      }
+    }),
+    alignItems: "center",
+    backgroundColor: "#fbfbfb",
+    paddingVertical: 20
+  },
+  tabBarInfoText: {
+    fontSize: 17,
+    color: "rgba(96,100,109, 1)",
+    textAlign: "center"
+  },
+  navigationFilename: {
+    marginTop: 5
+  },
+  helpContainer: {
+    marginTop: 15,
+    alignItems: "center"
+  },
+  helpLink: {
+    paddingVertical: 15
+  },
+  helpLinkText: {
+    fontSize: 14,
+    color: "#2e78b7"
+  }
+});
+
+
+
+Text Input:
+==========
+import * as React from "react";
+import { TextInput } from "react-native-paper";
+
+export default class MyComponent extends React.Component {
+  state = {
+    text: ""
+  };
+
+  render() {
+    let { onChange } = this.props;
+    return (
+      <TextInput
+        label={this.props.label || ""}
+        value={this.state.text}
+        style={{ marginBottom: 10 }}
+        onChangeText={text =>
+          this.setState({ text }, () => {
+            if (typeof onChange == "function") onChange(text);
+          })
+        }
+      />
+    );
+  }
+}
+
+
+Internal screen:
+===============
+import React from "react";
+import { View, Text, Button } from "react-native";
+
+export default class InternalScreen extends React.Component {
+  render() {
+    let params =
+      (this.props &&
+        this.props.navigation &&
+        this.props.navigation.state &&
+        this.props.navigation.state.params) ||
+      {};
+    return (
+      <View
+        style={{
+          padding: 10,
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <Text>Congratulations {params.name}!!</Text>
+        <Text>
+          Your request has been submitted, we will send you invitation to your
+          email {params.email}
+        </Text>
+        <Button
+          title="Go back"
+          onPress={() => this.props.navigation.goBack()}
         />
       </View>
     );

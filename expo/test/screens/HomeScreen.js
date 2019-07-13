@@ -7,26 +7,89 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  Button
+  View
 } from "react-native";
-
+import AppBar from "../components/AppBar";
+import { Avatar, Button } from "react-native-paper";
 import { MonoText } from "../components/StyledText";
-
-export default function HomeScreen({ navigation }) {
-  const { navigate } = navigation;
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
-        
-      </ScrollView>
-
-    
-    </View>
-  );
+import TextInput from "../components/TextInput";
+export default class HomeScreen extends React.Component {
+  static navigationOptions = {
+    title: "Welcome"
+  };
+  state = {
+    name: "",
+    email: "",
+    mobile: "",
+    age: ""
+  };
+  render() {
+    const { navigate } = this.props.navigation;
+    return (
+      <View style={[styles.container, { marginTop: 20 }]}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <View style={{ flexDirection: "row", margin: 10 }}>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "center"
+              }}
+            >
+              <Avatar.Image
+                style={{ backgroundColor: "white" }}
+                size={100}
+                source={require("../assets/images/logo.png")}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text>name:{this.state.name}</Text>
+              <Text>mobile:{this.state.mobile}</Text>
+              <Text>age:{this.state.age}</Text>
+            </View>
+          </View>
+          <View style={{ margin: 10 }}>
+            <TextInput
+              label="Name"
+              onChange={val => {
+                this.setState({ name: val });
+              }}
+            />
+            <TextInput
+              label="Age"
+              onChange={val => {
+                this.setState({ age: val });
+              }}
+            />
+            <TextInput
+              label="Mobile"
+              onChange={val => {
+                this.setState({ mobile: val });
+              }}
+            />
+            <TextInput
+              label="Email "
+              onChange={val => {
+                this.setState({ email: val });
+              }}
+            />
+            <Button
+              disabled={this.state.name.length < 6 || this.state.email == ""}
+              mode="contained"
+              color="#fc0"
+              style={{ marginTop: 10 }}
+              onPress={() => navigate("InternalScreen", this.state)}
+            >
+              <Text>Submit Request</Text>
+            </Button>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
 }
 
 HomeScreen.navigationOptions = {
