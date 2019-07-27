@@ -13,6 +13,9 @@ import {
   TouchableRipple,
   Paragraph
 } from "react-native-paper";
+import { connect } from "react-redux";
+import counterActions from "../redux/actions/counter";
+
 class CheckboxComponent extends React.Component {
   state = {
     checked: false
@@ -68,13 +71,18 @@ const MyComponent = () => (
   />
 );
 
-export default class Login extends React.Component {
+class Login extends React.Component {
   render() {
+    console.log({ counter: this.props.counter });
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <MyComponent />
         <ButtonComponent
-          onPress={() => this.props.navigation.navigate("Main")}
+          onPress={() =>
+            this.props.counter > 10
+              ? this.props.navigation.navigate("Main")
+              : this.props.dispatchIncrement()
+          }
         />
         <CheckboxComponent />
       </View>
@@ -99,3 +107,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16
   }
 });
+
+const mapStateToProps = state => {
+  return {
+    counter: state.counter
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatchIncrement: () => {
+      dispatch(counterActions.increment());
+    }
+  };
+};
+
+// Connect the screens to Redux
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);
