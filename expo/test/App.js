@@ -1,64 +1,91 @@
-import { AppLoading } from "expo";
-import { Asset } from "expo-asset";
-import * as Font from "expo-font";
-import React, { useState } from "react";
-import { Platform, StatusBar, StyleSheet, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  ActivityIndicator,
+  AsyncStorage,
+  Button,
+  StatusBar,
+  StyleSheet,
+  View
+} from "react-native";
+import {
+  createStackNavigator,
+  createSwitchNavigator,
+  createAppContainer
+} from "react-navigation";
+import SignUpScreen from "./screens/SignUpScreen";
 import { Provider, connect } from "react-redux";
-import AppNavigator from "./navigation/AppNavigator";
-import store from "./redux/store"
-export default function App(props) {
-  const [isLoadingComplete, setLoadingComplete] = useState(false);
+import store from "./redux/store";
+import styles from "./styles";
+import HomeScreen from "./screens/ProfileScreen";
 
-  if (!isLoadingComplete && !props.skipLoadingScreen) {
+class OtherScreen extends React.Component {
+  static navigationOptions = {
+    title: "Lots of features here"
+  };
+
+  render() {
     return (
-      <AppLoading
-        startAsync={loadResourcesAsync}
-        onError={handleLoadingError}
-        onFinish={() => handleFinishLoading(setLoadingComplete)}
-      />
+      <View style={styles.container}>
+        <Button title="I'm done, sign me out" onPress={this._signOutAsync} />
+        <StatusBar barStyle="default" />
+      </View>
     );
-  } else {
+  }
+
+  _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    this.props.navigation.navigate("Auth");
+  };
+}
+
+class AuthLoadingScreen extends React.Component {
+  constructor() {
+    super();
+    this._bootstrapAsync();
+  }
+
+  // Fetch the token from storage then navigate to our appropriate place
+  _bootstrapAsync = async () => {
+    const userToken = await AsyncStorage.getItem("userToken");
+
+    // This will switch to the App screen or Auth screen and this loading
+    // screen will be unmounted and thrown away.
+    this.props.navigation.navigate(userToken ? "App" : "Auth");
+  };
+
+  // Render any loading content that you like here
+  render() {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator />
+        <StatusBar barStyle="default" />
+      </View>
+    );
+  }
+}
+
+const AppStack = createStackNavigator({ Home: HomeScreen, Other: OtherScreen });
+const AuthStack = createStackNavigator({ SignUp: SignUpScreen });
+
+const APP = createAppContainer(
+  createSwitchNavigator(
+    {
+      AuthLoading: AuthLoadingScreen,
+      App: AppStack,
+      Auth: AuthStack
+    },
+    {
+      initialRouteName: "AuthLoading"
+    }
+  )
+);
+
+export default class App extends React.Component {
+  render() {
     return (
       <Provider store={store}>
-        <View style={styles.container}>
-          {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
+        <APP />
       </Provider>
     );
   }
 }
-
-async function loadResourcesAsync() {
-  await Promise.all([
-    Asset.loadAsync([
-      require("./assets/images/robot-dev.png"),
-      require("./assets/images/robot-prod.png")
-    ]),
-    Font.loadAsync({
-      // This is the font that we are using for our tab bar
-      ...Ionicons.font,
-      // We include SpaceMono because we use it in HomeScreen.js. Feel free to
-      // remove this if you are not using it in your app
-      "space-mono": require("./assets/fonts/SpaceMono-Regular.ttf")
-    })
-  ]);
-}
-
-function handleLoadingError(error: Error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
-  console.warn(error);
-}
-
-function handleFinishLoading(setLoadingComplete) {
-  setLoadingComplete(true);
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff"
-  }
-});
