@@ -14,7 +14,10 @@ import {
 } from "react-navigation";
 import SignUpScreen from "./screens/SignUpScreen";
 import { Provider, connect } from "react-redux";
-import store from "./redux/store";
+const Store = require("./redux/store").default();
+let { store, persistor } = Store;
+import { PersistGate } from "redux-persist/integration/react";
+
 import styles from "./styles";
 import HomeScreen from "./screens/ProfileScreen";
 
@@ -84,7 +87,9 @@ export default class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
-        <APP />
+        <PersistGate loading={null} persistor={persistor}>
+          <APP />
+        </PersistGate>
       </Provider>
     );
   }

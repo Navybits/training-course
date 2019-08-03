@@ -1,9 +1,71 @@
+Image picker file:
+
+import * as React from "react";
+import { Button, Image, View } from "react-native";
+import * as ImagePicker from 'expo-image-picker'
+import Constants from "expo-constants";
+import * as Permissions from "expo-permissions";
+export default class ImagePickerExample extends React.Component {
+  state = {
+    image: null
+  };
+
+  render() {
+    let { image } = this.state;
+
+    return (
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Button
+          title="Pick an image from camera roll"
+          onPress={this._pickImage}
+        />
+        {image && (
+          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+        )}
+      </View>
+    );
+  }
+
+  componentDidMount() {
+    this.getPermissionAsync();
+  }
+
+  getPermissionAsync = async () => {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== "granted") {
+        alert("Sorry, we need camera roll permissions to make this work!");
+      }
+    }
+  };
+
+  _pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3]
+    });
+
+    // console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ image: result.uri });
+      this.props.onSelect(result.uri);
+    }
+  };
+}
+
+-------------
+Signup screen 
+
 import React from "react";
-import { View, Button } from "react-native";
+import { View, Button, Text } from "react-native";
 import { connect } from "react-redux";
 import * as userActions from "../redux/actions/userData";
 import styles from "../styles";
-import TextInput from "../components/TextInput";
+// import TextInput from "../components/TextInput";
+import { TextInput } from "react-native-paper";
+import ImagePickerExample from "../components/imagePicker";
 class SignInScreen extends React.Component {
   static navigationOptions = {
     title: "Please sign in"
@@ -14,19 +76,50 @@ class SignInScreen extends React.Component {
   componentWillReceiveProps(nextProps) {
     let newUserData = nextProps.userData,
       oldUserData = this.props.userData;
-    if (!oldUserData.name && newUserData && newUserData.name) {
+    if (newUserData && newUserData.name) {
+      this.props.navigation.navigate("App");
+    }
+  }
+  componentDidMount() {
+    let oldUserData = this.props.userData;
+    if (oldUserData && oldUserData.name) {
       this.props.navigation.navigate("App");
     }
   }
   render() {
     return (
-      <View>
+      <View style={styles.container}>
+        <ImagePickerExample onSelect={uri => this.setState({ uri })} />
         <TextInput
           label="Name"
-          onChange={text => {
+          mode="outlined"
+          style={styles.textInput}
+          value={this.state.name}
+          onChangeText={text => {
             this.setState({ name: text });
           }}
         />
+        <TextInput
+          label="Email"
+          mode="outlined"
+          style={styles.textInput}
+          value={this.state.email}
+          onChangeText={text => {
+            this.setState({ email: text });
+          }}
+          keyboardType="email-address"
+        />
+        <TextInput
+          label="Password"
+          mode="outlined"
+          secureTextEntry={true}
+          style={styles.textInput}
+          value={this.state.password}
+          onChangeText={text => {
+            this.setState({ password: text });
+          }}
+        />
+        <Text>{this.props.userData.name}</Text>
         <Button title="Sign in!" onPress={this._signInAsync} />
       </View>
     );
@@ -36,7 +129,7 @@ class SignInScreen extends React.Component {
     console.log("calling dispatch action", this.state);
     // await AsyncStorage.setItem("userToken", "abc");
     // this.props.navigation.navigate("App");
-    this.props.setUserDataInRedux({ name: this.state.name });
+    this.props.setUserDataInRedux(this.state);
   };
 }
 
@@ -60,200 +153,62 @@ export default connect(
   mapDispatchToProps
 )(SignInScreen);
 
-
-
-
-------------------
-action : 
-
-export const SET_USER_DATA = "SET_USER_DATA";
-
-export function set_user_data(data) {
-  return {
-    type: SET_USER_DATA,
-    data: data
-  };
-}
-
-
--------------------
-reducer:
-
-import { SET_USER_DATA } from "../actions/userData";
-
-export default function userData(state = {}, action) {
-  switch (action.type) {
-    case SET_USER_DATA:
-      return action.data;
-    default:
-      return state;
-  }
-}
-
----------------------
-store:
-
-
-import { createStore, combineReducers } from "redux";
-import counter from "./reducers/counter";
-import userData from "./reducers/userData";
-// A very simple store
-export default createStore(combineReducers({ counter: counter, userData }));
-
-
-
-----------------------
-
-App.js
-
-import React from "react";
-import {
-  ActivityIndicator,
-  AsyncStorage,
-  Button,
-  StatusBar,
-  StyleSheet,
-  View
-} from "react-native";
-import {
-  createStackNavigator,
-  createSwitchNavigator,
-  createAppContainer
-} from "react-navigation";
-import SignUpScreen from "./screens/SignUpScreen";
-import { Provider, connect } from "react-redux";
-import store from "./redux/store";
-import styles from "./styles";
-class HomeScreen extends React.Component {
-  static navigationOptions = {
-    title: "Welcome to the app!"
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Button title="Show me more of the app" onPress={this._showMoreApp} />
-        <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
-      </View>
-    );
-  }
-
-  _showMoreApp = () => {
-    this.props.navigation.navigate("Other");
-  };
-
-  _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate("Auth");
-  };
-}
-
-class OtherScreen extends React.Component {
-  static navigationOptions = {
-    title: "Lots of features here"
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Button title="I'm done, sign me out" onPress={this._signOutAsync} />
-        <StatusBar barStyle="default" />
-      </View>
-    );
-  }
-
-  _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate("Auth");
-  };
-}
-
-class AuthLoadingScreen extends React.Component {
-  constructor() {
-    super();
-    this._bootstrapAsync();
-  }
-
-  // Fetch the token from storage then navigate to our appropriate place
-  _bootstrapAsync = async () => {
-    const userToken = await AsyncStorage.getItem("userToken");
-
-    // This will switch to the App screen or Auth screen and this loading
-    // screen will be unmounted and thrown away.
-    this.props.navigation.navigate(userToken ? "App" : "Auth");
-  };
-
-  // Render any loading content that you like here
-  render() {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator />
-        <StatusBar barStyle="default" />
-      </View>
-    );
-  }
-}
-
-const AppStack = createStackNavigator({ Home: HomeScreen, Other: OtherScreen });
-const AuthStack = createStackNavigator({ SignUp: SignUpScreen });
-
-const APP = createAppContainer(
-  createSwitchNavigator(
-    {
-      AuthLoading: AuthLoadingScreen,
-      App: AppStack,
-      Auth: AuthStack
-    },
-    {
-      initialRouteName: "AuthLoading"
-    }
-  )
-);
-
-export default class App extends React.Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <APP />
-      </Provider>
-    );
-  }
-}
-
-
-
-------------
-styles.js
+----------------
+styles
 
 import { StyleSheet } from "react-native";
 export default StyleSheet.create({
   container: {
+    padding: 10,
     flex: 1,
+    width: "100%",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+  },
+  textInput: {
+    width:"100%",
+    marginBottom: 5,
   }
 });
 
 
-------------
+---------------
 Profile screen
 
+
+
 import React from "react";
-import { View, Button, Text } from "react-native";
+import { View, Button, Text, Image } from "react-native";
 import { connect } from "react-redux";
 import styles from "../styles";
 import TextInput from "../components/TextInput";
+import * as userActions from "../redux/actions/userData";
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
     title: "Welcome to the app!"
   };
-
+  componentWillReceiveProps(nextProps) {
+    let newUserData = nextProps.userData,
+      oldUserData = this.props.userData;
+    if (!nextProps.name && oldUserData && oldUserData.name) {
+      this.props.navigation.navigate("Auth");
+    }
+  }
   render() {
     console.log(this.props);
     return (
       <View style={styles.container}>
-        <Text>Welcome {this.props.userData.name}</Text>
+        <Text style={{ textAlign: "center" }}>
+          Welcome {this.props.userData.name}
+        </Text>
+        <Text style={{ textAlign: "center" }}>
+          You are logged in as {this.props.userData.email}
+        </Text>
+        <Image
+          source={{ uri: this.props.userData.uri }}
+          style={{ width: 200, height: 200 }}
+        />
         <Button title="Show me more of the app" onPress={this._showMoreApp} />
         <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </View>
@@ -265,8 +220,9 @@ class HomeScreen extends React.Component {
   };
 
   _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate("Auth");
+    this.props.resetUserDataInRedux();
+    // await AsyncStorage.clear();
+    // this.props.navigation.navigate("Auth");
   };
 }
 
@@ -277,7 +233,11 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    resetUserDataInRedux: () => {
+      dispatch(userActions.set_user_data({}));
+    }
+  };
 };
 
 export default connect(

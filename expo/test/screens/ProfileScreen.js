@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Button, Text } from "react-native";
+import { View, Button, Text, Image } from "react-native";
 import { connect } from "react-redux";
 import styles from "../styles";
 import TextInput from "../components/TextInput";
@@ -20,7 +20,16 @@ class HomeScreen extends React.Component {
     console.log(this.props);
     return (
       <View style={styles.container}>
-        <Text>Welcome {this.props.userData.name}</Text>
+        <Text style={{ textAlign: "center" }}>
+          Welcome {this.props.userData.name}
+        </Text>
+        <Text style={{ textAlign: "center" }}>
+          You are logged in as {this.props.userData.email}
+        </Text>
+        <Image
+          source={{ uri: this.props.userData.uri }}
+          style={{ width: 200, height: 200 }}
+        />
         <Button title="Show me more of the app" onPress={this._showMoreApp} />
         <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </View>
