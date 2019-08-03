@@ -34,11 +34,16 @@ export default class ImagePickerExample extends React.Component {
       if (status !== "granted") {
         alert("Sorry, we need camera roll permissions to make this work!");
       }
+
+      const { status : _status } = await Permissions.askAsync(Permissions.CAMERA);
+      if (_status !== "granted") {
+        alert("Sorry, we need camera permissions to make this work!");
+      }
     }
   };
 
   _pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3]
