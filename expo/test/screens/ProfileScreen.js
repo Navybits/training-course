@@ -22,44 +22,14 @@ class HomeScreen extends React.Component {
           "select * from users where email = ?",
           [this.props.userData.email],
           (_, { rows }) => {
-            console.log({ rows, item: rows.item(0) });
+            // console.log({ rows, item: rows.item(0) });
             self.setState({ userData: rows.item(0) });
           }
-        );
-        tx.executeSql(
-          "create table if not exists movies (id integer primary key not null, title text, releaseYear integer)"
         );
       },
       console.log,
       console.log
     );
-    // fetch("https://facebook.github.io/react-native/movies.json")
-    //   .then(response => response.json())
-    //   .then(responseJson => {
-    //     // this.setState(
-    //     //   {
-    //     //     isLoading: false,
-    //     //     dataSource: responseJson.movies,
-    //     //   },
-    //     //   function() {}
-    //     // );
-    //     db.transaction(tx => {
-    //       responseJson.movies.forEach(movie => {
-    //         tx.executeSql(
-    //           "insert into movies (id,title,releaseYear) values (?, ?, ?)",
-    //           [movie.id, movie.title, movie.releaseYear],
-    //           console.log,
-    //           console.log
-    //         );
-    //       });
-    //       tx.executeSql("select * from movies", [], (_, { rows: { _array } }) =>
-    //         self.setState({ movies: _array })
-    //       );
-    //     });
-    //   })
-    //   .catch(error => {
-    //     console.error(error);
-    //   });
   }
   componentWillReceiveProps(nextProps) {
     let newUserData = nextProps.userData,
@@ -69,7 +39,7 @@ class HomeScreen extends React.Component {
     }
   }
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     return (
       <View style={styles.container}>
         {this.state.userData ? (
@@ -98,7 +68,11 @@ class HomeScreen extends React.Component {
             <Text style={{ fontSize: 18 }}>{movie.releaseYear}</Text>
           </View>
         ))}
-        <Button title="Show me more of the app" onPress={this._showMoreApp} />
+        <Button title="Search in movies" onPress={this._showMoreApp} />
+        <Button
+          title="View search history"
+          onPress={() => this.props.navigation.navigate("QueryHistory")}
+        />
         <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </View>
     );
@@ -124,9 +98,9 @@ class HomeScreen extends React.Component {
       console.log,
       () => {
         db.transaction(tx => {
-          tx.executeSql("select * from users", [], (_, { rows }) =>
-            console.log(JSON.stringify(rows))
-          );
+          tx.executeSql("select * from users", [], (_, { rows }) => {
+            // console.log(JSON.stringify(rows));
+          });
         });
         self.props.resetUserDataInRedux();
       }

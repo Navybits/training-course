@@ -17,30 +17,13 @@ import { Provider, connect } from "react-redux";
 const Store = require("./redux/store").default();
 let { store, persistor } = Store;
 import { PersistGate } from "redux-persist/integration/react";
-import "./database"
+import "./database";
 import styles from "./styles";
 import HomeScreen from "./screens/ProfileScreen";
 
-class OtherScreen extends React.Component {
-  static navigationOptions = {
-    title: "Lots of features here"
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Button title="I'm done, sign me out" onPress={this._signOutAsync} />
-        <StatusBar barStyle="default" />
-      </View>
-    );
-  }
-
-  _signOutAsync = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate("Auth");
-  };
-}
-
+import SearchScreen from "./screens/SearchScreen";
+import SearchQueriesHistory from "./screens/SearchQueriesHistory";
+import SearchMoviesHistory from "./screens/SearchMoviesHistory";
 class AuthLoadingScreen extends React.Component {
   constructor() {
     super();
@@ -67,7 +50,12 @@ class AuthLoadingScreen extends React.Component {
   }
 }
 
-const AppStack = createStackNavigator({ Home: HomeScreen, Other: OtherScreen });
+const AppStack = createStackNavigator({
+  Home: HomeScreen,
+  Other: SearchScreen,
+  QueryHistory: SearchQueriesHistory,
+  MoviesHistory: SearchMoviesHistory
+});
 const AuthStack = createStackNavigator({ SignUp: SignUpScreen });
 
 const APP = createAppContainer(

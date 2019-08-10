@@ -73,7 +73,7 @@ const MyComponent = () => (
 
 class Login extends React.Component {
   render() {
-    console.log({ counter: this.props.counter });
+    // console.log({ counter: this.props.counter });
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <MyComponent />

@@ -34,7 +34,7 @@ class SignInScreen extends React.Component {
     db.transaction(
       tx => {
         tx.executeSql("select * from users", [], (_, { rows }) => {
-          console.log({ rows, item: rows.item(0) });
+          // console.log({ rows, item: rows.item(0) });
         });
       },
       console.log,

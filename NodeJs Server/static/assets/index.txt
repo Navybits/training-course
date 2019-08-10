@@ -1,74 +1,217 @@
-installation:
-expo install expo-image-picker expo-constants expo-permissions
+App.js
 
 
 
+import React from "react";
+import {
+  ActivityIndicator,
+  AsyncStorage,
+  Button,
+  StatusBar,
+  StyleSheet,
+  View
+} from "react-native";
+import {
+  createStackNavigator,
+  createSwitchNavigator,
+  createAppContainer
+} from "react-navigation";
+import SignUpScreen from "./screens/SignUpScreen";
+import { Provider, connect } from "react-redux";
+const Store = require("./redux/store").default();
+let { store, persistor } = Store;
+import { PersistGate } from "redux-persist/integration/react";
+import "./database";
+import styles from "./styles";
+import HomeScreen from "./screens/ProfileScreen";
 
-Image picker file:
+import SearchScreen from "./screens/SearchScreen";
+import SearchQueriesHistory from "./screens/SearchQueriesHistory";
+import SearchMoviesHistory from "./screens/SearchMoviesHistory";
+class AuthLoadingScreen extends React.Component {
+  constructor() {
+    super();
+    this._bootstrapAsync();
+  }
 
-import * as React from "react";
-import { Button, Image, View } from "react-native";
-import * as ImagePicker from 'expo-image-picker'
-import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
-export default class ImagePickerExample extends React.Component {
-  state = {
-    image: null
+  // Fetch the token from storage then navigate to our appropriate place
+  _bootstrapAsync = async () => {
+    const userToken = await AsyncStorage.getItem("userToken");
+
+    // This will switch to the App screen or Auth screen and this loading
+    // screen will be unmounted and thrown away.
+    this.props.navigation.navigate(userToken ? "App" : "Auth");
   };
 
+  // Render any loading content that you like here
   render() {
-    let { image } = this.state;
-
     return (
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Button
-          title="Pick an image from camera roll"
-          onPress={this._pickImage}
-        />
-        {image && (
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-        )}
+      <View style={styles.container}>
+        <ActivityIndicator />
+        <StatusBar barStyle="default" />
       </View>
     );
   }
+}
 
-  componentDidMount() {
-    this.getPermissionAsync();
+const AppStack = createStackNavigator({
+  Home: HomeScreen,
+  Other: SearchScreen,
+  QueryHistory: SearchQueriesHistory,
+  MoviesHistory: SearchMoviesHistory
+});
+const AuthStack = createStackNavigator({ SignUp: SignUpScreen });
+
+const APP = createAppContainer(
+  createSwitchNavigator(
+    {
+      AuthLoading: AuthLoadingScreen,
+      App: AppStack,
+      Auth: AuthStack
+    },
+    {
+      initialRouteName: "AuthLoading"
+    }
+  )
+);
+
+export default class App extends React.Component {
+  render() {
+    return (
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <APP />
+        </PersistGate>
+      </Provider>
+    );
   }
-
-  getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
-      }
-
-      const { status : _status } = await Permissions.askAsync(Permissions.CAMERA);
-      if (_status !== "granted") {
-        alert("Sorry, we need camera permissions to make this work!");
-      }
-    }
-  };
-
-  _pickImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3]
-    });
-
-    // console.log(result);
-
-    if (!result.cancelled) {
-      this.setState({ image: result.uri });
-      this.props.onSelect(result.uri);
-    }
-  };
 }
 
 
--------------
-Signup screen 
+
+-------------------
+
+Search Screen 
+
+import React from "react";
+import { View, StatusBar, Image, ScrollView } from "react-native";
+import styles from "../styles";
+import { TextInput } from "react-native-paper";
+import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
+import db from "../database";
+export default class SearchScreen extends React.Component {
+  static navigationOptions = {
+    title: "Search in movies"
+  };
+  state = {
+    searchQuery: "",
+    movies: []
+  };
+  componentDidMount() {
+    db.transaction(tx => {
+      tx.executeSql(
+        "create table if not exists movies3 (id integer primary key not null, Title text,Year text,Poster text,Type text,imdbID text,searchQueryId integer);"
+      );
+      tx.executeSql(
+        "create table if not exists search_queries (id integer primary key not null, query text);"
+      );
+      tx.executeSql("select * from movies3", [], (_, { rows: { _array } }) =>
+        console.log({ movies: _array })
+      );
+
+      tx.executeSql("select * from search_queries", [], (_, { rows: { _array } }) =>
+        console.log({ searchQueries: _array })
+      );
+    });
+  }
+
+  render() {
+    return (
+      <ScrollView>
+        <View style={[styles.container, { justifyContent: "flex-start" }]}>
+          <StatusBar barStyle="default" />
+          <TextInput
+            label="Search for movie"
+            mode="outlined"
+            style={styles.textInput}
+            value={this.state.searchQuery}
+            onChangeText={text => {
+              this.setState({ searchQuery: text });
+            }}
+            onSubmitEditing={({
+              nativeEvent: { text, eventCount, target }
+            }) => {
+              fetch(`http://www.omdbapi.com/?apikey=4ec0b62b&s=${text}`)
+                .then(response => response.json())
+                .then(responseJson => {
+                  console.log({ responseJson });
+                  let result = responseJson.Search;
+                  if (!result || result.length == 0) return;
+                  this.setState({
+                    movies: result
+                  });
+                  db.transaction(tx => {
+                    tx.executeSql(
+                      "insert into search_queries (query) values (?)",
+                      [text],
+                      (_, { insertId }) => {
+                        result.forEach(movie => {
+                          tx.executeSql(
+                            "insert into movies3 (Title,Year,Poster,Type,imdbID,searchQueryId) values (?, ?, ?, ?, ?,?)",
+                            [
+                              movie.Title,
+                              movie.Year,
+                              movie.Poster,
+                              movie.Type,
+                              movie.imdbID,
+                              insertId
+                            ],
+                            console.log,
+                            console.log
+                          );
+                        });
+                      }
+                    );
+
+                    tx.executeSql(
+                      "select * from movies3",
+                      [],
+                      (_, { rows: { _array } }) =>
+                        console.log({ movies: _array })
+                    );
+                  });
+                })
+                .catch(error => {
+                  console.error(error);
+                });
+              //
+            }}
+          />
+          <View style={{ width: "100%" }}>
+            {this.state.movies.map((movie, index) => (
+              <Card
+                key={`movie-list-item-${index}`}
+                style={{ marginBottom: 20 }}
+              >
+                <Card.Content>
+                  <Title>{movie.Title}</Title>
+                  <Paragraph>Released On {movie.Year}</Paragraph>
+                </Card.Content>
+                <Card.Cover source={{ uri: movie.Poster }} />
+              </Card>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+}
+
+
+
+
+---------
+Signup screen
 
 import React from "react";
 import { View, Button, Text } from "react-native";
@@ -78,6 +221,7 @@ import styles from "../styles";
 // import TextInput from "../components/TextInput";
 import { TextInput } from "react-native-paper";
 import ImagePickerExample from "../components/imagePicker";
+import db from "../database";
 class SignInScreen extends React.Component {
   static navigationOptions = {
     title: "Please sign in"
@@ -97,6 +241,20 @@ class SignInScreen extends React.Component {
     if (oldUserData && oldUserData.name) {
       this.props.navigation.navigate("App");
     }
+    db.transaction(tx => {
+      tx.executeSql(
+        "create table if not exists users (id integer primary key not null, email text, password text, name text, image text);"
+      );
+    });
+    db.transaction(
+      tx => {
+        tx.executeSql("select * from users", [], (_, { rows }) => {
+          // console.log({ rows, item: rows.item(0) });
+        });
+      },
+      console.log,
+      console.log
+    );
   }
   render() {
     return (
@@ -141,7 +299,32 @@ class SignInScreen extends React.Component {
     console.log("calling dispatch action", this.state);
     // await AsyncStorage.setItem("userToken", "abc");
     // this.props.navigation.navigate("App");
-    this.props.setUserDataInRedux(this.state);
+    let self = this;
+    db.transaction(
+      tx => {
+        tx.executeSql(
+          "insert into users (email, password, name, image) values (?, ?, ?, ?)",
+          [
+            this.state.email,
+            this.state.password,
+            this.state.name,
+            this.state.uri
+          ],
+          (_, { insertId }) => {
+            self.props.setUserDataInRedux(
+              Object.assign({}, self.state, { id: insertId })
+            );
+          }
+        );
+        tx.executeSql("select * from users", [], (_, { rows }) =>
+          console.log(JSON.stringify(rows))
+        );
+      },
+      null,
+      () => {
+        console.log("success");
+      }
+    );
   };
 }
 
@@ -166,28 +349,7 @@ export default connect(
 )(SignInScreen);
 
 ----------------
-styles
-
-import { StyleSheet } from "react-native";
-export default StyleSheet.create({
-  container: {
-    padding: 10,
-    flex: 1,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textInput: {
-    width:"100%",
-    marginBottom: 5,
-  }
-});
-
-
----------------
 Profile screen
-
-
 
 import React from "react";
 import { View, Button, Text, Image } from "react-native";
@@ -195,11 +357,33 @@ import { connect } from "react-redux";
 import styles from "../styles";
 import TextInput from "../components/TextInput";
 import * as userActions from "../redux/actions/userData";
-
+import db from "../database";
 class HomeScreen extends React.Component {
   static navigationOptions = {
     title: "Welcome to the app!"
   };
+  state = {
+    userData: {},
+    movies: []
+  };
+
+  componentDidMount() {
+    let self = this;
+    db.transaction(
+      tx => {
+        tx.executeSql(
+          "select * from users where email = ?",
+          [this.props.userData.email],
+          (_, { rows }) => {
+            // console.log({ rows, item: rows.item(0) });
+            self.setState({ userData: rows.item(0) });
+          }
+        );
+      },
+      console.log,
+      console.log
+    );
+  }
   componentWillReceiveProps(nextProps) {
     let newUserData = nextProps.userData,
       oldUserData = this.props.userData;
@@ -208,20 +392,40 @@ class HomeScreen extends React.Component {
     }
   }
   render() {
-    console.log(this.props);
+    // console.log(this.state);
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: "center" }}>
-          Welcome {this.props.userData.name}
-        </Text>
-        <Text style={{ textAlign: "center" }}>
-          You are logged in as {this.props.userData.email}
-        </Text>
-        <Image
-          source={{ uri: this.props.userData.uri }}
-          style={{ width: 200, height: 200 }}
+        {this.state.userData ? (
+          <>
+            <Text style={{ textAlign: "center" }}>
+              Welcome {this.state.userData.name}
+            </Text>
+            <Text style={{ textAlign: "center" }}>
+              You are logged in as {this.state.userData.email}
+            </Text>
+            <Image
+              source={{ uri: this.state.userData.image }}
+              style={{ width: 200, height: 200 }}
+            />
+          </>
+        ) : null}
+        {(this.state.movies || []).map((movie, index) => (
+          <View
+            key={index}
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={{ fontSize: 20 }}>
+              {movie.id}){movie.title}
+            </Text>
+            <Text>{":"}</Text>
+            <Text style={{ fontSize: 18 }}>{movie.releaseYear}</Text>
+          </View>
+        ))}
+        <Button title="Search in movies" onPress={this._showMoreApp} />
+        <Button
+          title="View search history"
+          onPress={() => this.props.navigation.navigate("QueryHistory")}
         />
-        <Button title="Show me more of the app" onPress={this._showMoreApp} />
         <Button title="Actually, sign me out :)" onPress={this._signOutAsync} />
       </View>
     );
@@ -232,7 +436,28 @@ class HomeScreen extends React.Component {
   };
 
   _signOutAsync = async () => {
-    this.props.resetUserDataInRedux();
+    let self = this;
+    console.log(
+      `removing my account ${this.props.userData.email} : ${
+        this.props.userData.id
+      }`
+    );
+    db.transaction(
+      tx => {
+        tx.executeSql(`delete from users where id=?;`, [
+          this.props.userData.id
+        ]);
+      },
+      console.log,
+      () => {
+        db.transaction(tx => {
+          tx.executeSql("select * from users", [], (_, { rows }) => {
+            // console.log(JSON.stringify(rows));
+          });
+        });
+        self.props.resetUserDataInRedux();
+      }
+    );
     // await AsyncStorage.clear();
     // this.props.navigation.navigate("Auth");
   };
@@ -256,3 +481,119 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(HomeScreen);
+
+
+
+------------------
+
+Search queries history 
+
+import React from "react";
+
+import { ScrollView, View, Text, Button } from "react-native";
+
+import db from "../database";
+// import { Button } from "react-native-paper";
+
+export default class SearchQueriesHistory extends React.Component {
+  state = {
+    searchQueries: []
+  };
+  static navigationOptions = {
+    title: "Search history"
+  };
+  componentDidMount() {
+    db.transaction(tx => {
+      tx.executeSql(
+        "select * from search_queries order by id desc",
+        [],
+        (_, { rows: { _array } }) => {
+          this.setState({ searchQueries: _array });
+        },
+        console.log
+      );
+    });
+  }
+  render() {
+    let { searchQueries } = this.state;
+    return (
+      <ScrollView>
+        {searchQueries.map((searchQuery, index) => (
+          <View
+            key={`search-query-${index}`}
+            style={{
+              padding: 10,
+              borderBottomColor: "#ededed",
+              borderBottomWidth: 1
+            }}
+          >
+            <Button
+              title={searchQuery.query}
+              onPress={() =>
+                this.props.navigation.navigate("MoviesHistory", { searchQuery })
+              }
+            />
+          </View>
+        ))}
+      </ScrollView>
+    );
+  }
+}
+
+
+---------------
+Search movies history 
+
+
+import React from "react";
+import { ScrollView, View } from "react-native";
+import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
+
+import db from "../database";
+
+export default class SearchMoviesHistory extends React.Component {
+  state = {
+    movies: []
+  };
+  static navigationOptions = {
+    title: "Movies history"
+  };
+  componentDidMount() {
+    let {
+      navigation: {
+        state: {
+          params: { searchQuery }
+        }
+      }
+    } = this.props;
+    db.transaction(tx => {
+      tx.executeSql(
+        "select * from movies3 where searchQueryId = ?",
+        [searchQuery.id],
+        (_, { rows: { _array } }) => {
+          this.setState({ movies: _array });
+        },
+        console.log
+      );
+    });
+  }
+
+  render() {
+    console.log(this.state);
+    return (
+      <ScrollView>
+        <View style={{ width: "100%" }}>
+          {this.state.movies.map((movie, index) => (
+            <Card key={`movie-list-item-${index}`} style={{ marginBottom: 20 }}>
+              <Card.Content>
+                <Title>{movie.Title}</Title>
+                <Paragraph>Released On {movie.Year}</Paragraph>
+              </Card.Content>
+              <Card.Cover source={{ uri: movie.Poster }} />
+            </Card>
+          ))}
+        </View>
+      </ScrollView>
+    );
+  }
+}
