@@ -17,7 +17,7 @@ import { Provider, connect } from "react-redux";
 const Store = require("./redux/store").default();
 let { store, persistor } = Store;
 import { PersistGate } from "redux-persist/integration/react";
-
+import "./database"
 import styles from "./styles";
 import HomeScreen from "./screens/ProfileScreen";
 

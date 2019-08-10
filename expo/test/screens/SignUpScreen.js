@@ -6,6 +6,7 @@ import styles from "../styles";
 // import TextInput from "../components/TextInput";
 import { TextInput } from "react-native-paper";
 import ImagePickerExample from "../components/imagePicker";
+import db from "../database";
 class SignInScreen extends React.Component {
   static navigationOptions = {
     title: "Please sign in"
@@ -25,6 +26,20 @@ class SignInScreen extends React.Component {
     if (oldUserData && oldUserData.name) {
       this.props.navigation.navigate("App");
     }
+    db.transaction(tx => {
+      tx.executeSql(
+        "create table if not exists users (id integer primary key not null, email text, password text, name text, image text);"
+      );
+    });
+    db.transaction(
+      tx => {
+        tx.executeSql("select * from users", [], (_, { rows }) => {
+          console.log({ rows, item: rows.item(0) });
+        });
+      },
+      console.log,
+      console.log
+    );
   }
   render() {
     return (
@@ -69,7 +84,32 @@ class SignInScreen extends React.Component {
     console.log("calling dispatch action", this.state);
     // await AsyncStorage.setItem("userToken", "abc");
     // this.props.navigation.navigate("App");
-    this.props.setUserDataInRedux(this.state);
+    let self = this;
+    db.transaction(
+      tx => {
+        tx.executeSql(
+          "insert into users (email, password, name, image) values (?, ?, ?, ?)",
+          [
+            this.state.email,
+            this.state.password,
+            this.state.name,
+            this.state.uri
+          ],
+          (_, { insertId }) => {
+            self.props.setUserDataInRedux(
+              Object.assign({}, self.state, { id: insertId })
+            );
+          }
+        );
+        tx.executeSql("select * from users", [], (_, { rows }) =>
+          console.log(JSON.stringify(rows))
+        );
+      },
+      null,
+      () => {
+        console.log("success");
+      }
+    );
   };
 }
 
