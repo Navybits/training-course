@@ -12,6 +12,7 @@
   "dependencies": {
     "express": "^4.16.4",
     "lodash": "^4.17.11",
+    "mongodb": "^3.3.2",
     "nunjucks": "^3.2.0",
     "request": "^2.88.0",
     "unirest": "^0.6.0"

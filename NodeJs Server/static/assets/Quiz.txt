@@ -1,0 +1,38 @@
+1-In Compass, view the video.movieDetails collection and apply the filter {genres: "Comedy"}.
+How many documents in video.movieDetails match the filter {genres: "Comedy"}?
+
+2-How many movies in the movieDetails collection have exactly 2 award wins and 2 award nominations?
+
+You will find the count() method useful in answering this question using the mongo shell.
+
+3-Explore the movieDetails collection that you loaded into your Atlas sandbox cluster and then issue a query to answer the following question. How many documents list just two writers: "Ethan Coen" and "Joel Coen", in that order?
+
+You will find the count() method useful in answering this question using the mongo shell.
+
+4-Explore the movieDetails collection that you loaded into your Atlas sandbox cluster and then issue a query to answer the following question. How many movies in the movieDetails collection are rated PG and have exactly 10 award nominations?
+
+You will find the count() method useful in answering this question using the mongo shell.
+
+5-Explore the movieDetails collection that you loaded into your Atlas sandbox cluster and then issue a query to answer the following question. How many movies in the movieDetails collection list "Family" among its genres?
+
+You will find the count() method useful in answering this question using the mongo shell.
+
+6-Explore the movieDetails collection that you loaded into your Atlas sandbox cluster and then issue a query to answer the following question. How many movies in the movieDetails collection list "Western" second among its genres?
+
+You will find the count() method useful in answering this question using the mongo shell.
+
+
+7-Suppose you wish to update the value of the plot field for one document in our movieDetails collection to correct a typo. Which of the following update operators and modifiers would you need to use to do this?
+
+Check all answers that apply:
+
+$push
+$position
+$rename
+$slice
+$mul
+$addToSet
+$inc
+$set
+$unset
+

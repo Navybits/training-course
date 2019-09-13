@@ -46,11 +46,11 @@ export default class SearchScreen extends React.Component {
             onSubmitEditing={({
               nativeEvent: { text, eventCount, target }
             }) => {
-              fetch(`http://www.omdbapi.com/?apikey=4ec0b62b&s=${text}`)
+              fetch(`http://localhost:9000/app/movies?search=${text}`)
                 .then(response => response.json())
                 .then(responseJson => {
                   console.log({ responseJson });
-                  let result = responseJson.Search;
+                  let result = responseJson;
                   if (!result || result.length == 0) return;
                   this.setState({
                     movies: result
@@ -64,11 +64,11 @@ export default class SearchScreen extends React.Component {
                           tx.executeSql(
                             "insert into movies3 (Title,Year,Poster,Type,imdbID,searchQueryId) values (?, ?, ?, ?, ?,?)",
                             [
-                              movie.Title,
-                              movie.Year,
-                              movie.Poster,
-                              movie.Type,
-                              movie.imdbID,
+                              movie.title,
+                              movie.year,
+                              movie.poster,
+                              movie.type,
+                              movie.imdb.id,
                               insertId
                             ],
                             console.log,
@@ -99,10 +99,10 @@ export default class SearchScreen extends React.Component {
                 style={{ marginBottom: 20 }}
               >
                 <Card.Content>
-                  <Title>{movie.Title}</Title>
-                  <Paragraph>Released On {movie.Year}</Paragraph>
+                  <Title>{movie.title}</Title>
+                  <Paragraph>Released On {movie.year}</Paragraph>
                 </Card.Content>
-                <Card.Cover source={{ uri: movie.Poster }} />
+                <Card.Cover source={{ uri: movie.poster }} />
               </Card>
             ))}
           </View>

@@ -1,1 +1,4 @@
-module.exports = (req, res) => res.render(`about`);
+module.exports = function(req, res) {
+  let db = this;
+  res.render(`about`);
+};

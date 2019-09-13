@@ -5,6 +5,8 @@ const homeRoute = require("./routes/home");
 const docsRoute = require("./routes/docs");
 const aboutRoute = require("./routes/about");
 const subscribeRoute = require("./routes/subscribe");
+const MongoClient = require("mongodb").MongoClient;
+
 var unirest = require("unirest");
 // unirest
 //   .get("https://restcountries-v1.p.rapidapi.com/name/lebanon")
@@ -47,12 +49,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Adding static folder
 app.use("/static", express.static(__dirname + "/static"));
 
-app.get("/", docsRoute);
+MongoClient.connect("mongodb://localhost:27017", function(err, client) {
+  let db = client.db("video");
+  let movies = db.collection("movieDetails");
+  app.get("/", docsRoute.bind(db));
 
-app.get("/home", homeRoute);
+  app.get("/home", homeRoute.bind(db));
 
-app.get("/about", aboutRoute);
+  app.get("/about", aboutRoute.bind(db));
 
-app.post("/subscribe", subscribeRoute);
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+  app.post("/subscribe", subscribeRoute.bind(db));
+  app.get("/app/movies", (req, res) => {
+    console.log(req.query);
+    let limit = Number(req.query.limit || 10);
+    let skip = Number(req.query.skip || 0);
+    let search = req.query.search || "";
+    movies
+      .find(
+        { title: { $regex: search, $options: "i" } },
+        { limit: limit, skip: skip }
+      )
+      .toArray()
+      .then(data => {
+        res.send(data);
+      });
+  });
+  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+});
