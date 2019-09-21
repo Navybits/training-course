@@ -7,6 +7,7 @@ import styles from "../styles";
 import { TextInput } from "react-native-paper";
 import ImagePickerExample from "../components/imagePicker";
 import db from "../database";
+import firebase from "../firebase/config";
 class SignInScreen extends React.Component {
   static navigationOptions = {
     title: "Please sign in"
@@ -21,7 +22,31 @@ class SignInScreen extends React.Component {
       this.props.navigation.navigate("App");
     }
   }
+
+  getMovies() {
+    console.log("getting movies count");
+    let ref = firebase.firestore().collection("movieDetails");
+    return new Promise((resolve, reject) => {
+      ref
+        .where("genres", "array-contains", "Comedy")
+        .where("imdb.rating", ">", 8)
+        .get()
+        .then(snapshot => {
+          let docs = [];
+          let result = snapshot.size;
+          snapshot.forEach(doc => {
+            docs.push(doc.data());
+          });
+          resolve(docs);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
   componentDidMount() {
+    this.getMovies().then(console.log);
     let oldUserData = this.props.userData;
     if (oldUserData && oldUserData.name) {
       this.props.navigation.navigate("App");

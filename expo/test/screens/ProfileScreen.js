@@ -68,6 +68,7 @@ class HomeScreen extends React.Component {
             <Text style={{ fontSize: 18 }}>{movie.releaseYear}</Text>
           </View>
         ))}
+        <Button title="Go to Chatting Room" onPress={this._goToChattingRoom} />
         <Button title="Search in movies" onPress={this._showMoreApp} />
         <Button
           title="View search history"
@@ -82,12 +83,14 @@ class HomeScreen extends React.Component {
     this.props.navigation.navigate("Other");
   };
 
+  _goToChattingRoom = () => {
+    this.props.navigation.navigate("ChattingRoom");
+  };
+
   _signOutAsync = async () => {
     let self = this;
     console.log(
-      `removing my account ${this.props.userData.email} : ${
-        this.props.userData.id
-      }`
+      `removing my account ${this.props.userData.email} : ${this.props.userData.id}`
     );
     db.transaction(
       tx => {

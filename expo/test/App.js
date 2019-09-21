@@ -20,7 +20,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import "./database";
 import styles from "./styles";
 import HomeScreen from "./screens/ProfileScreen";
-
+import ChattingRoomScreen from "./screens/ChattingScreen";
 import SearchScreen from "./screens/SearchScreen";
 import SearchQueriesHistory from "./screens/SearchQueriesHistory";
 import SearchMoviesHistory from "./screens/SearchMoviesHistory";
@@ -54,7 +54,8 @@ const AppStack = createStackNavigator({
   Home: HomeScreen,
   Other: SearchScreen,
   QueryHistory: SearchQueriesHistory,
-  MoviesHistory: SearchMoviesHistory
+  MoviesHistory: SearchMoviesHistory,
+  ChattingRoom: ChattingRoomScreen
 });
 const AuthStack = createStackNavigator({ SignUp: SignUpScreen });
 

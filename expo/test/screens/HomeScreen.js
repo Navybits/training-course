@@ -13,6 +13,7 @@ import AppBar from "../components/AppBar";
 import { Avatar, Button } from "react-native-paper";
 import { MonoText } from "../components/StyledText";
 import TextInput from "../components/TextInput";
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     title: "Welcome"
@@ -23,6 +24,7 @@ export default class HomeScreen extends React.Component {
     mobile: "",
     age: ""
   };
+  
   render() {
     const { navigate } = this.props.navigation;
     return (
