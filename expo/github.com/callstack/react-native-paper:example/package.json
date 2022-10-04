@@ -6,7 +6,7 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
-    "expo": "^31.0.0",
+    "expo": "^46.0.14",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
     "@callstack/react-theme-provider": "^1.0.7",
